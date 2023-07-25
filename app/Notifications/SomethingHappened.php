@@ -3,9 +3,11 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-class SomethingHappened extends Notification
+class SomethingHappened extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -14,7 +16,7 @@ class SomethingHappened extends Notification
 
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     public function toArray($notifiable)
@@ -22,5 +24,12 @@ class SomethingHappened extends Notification
         return [
             'text' => $this->text,
         ];
+    }
+
+    public function toBroadcast($notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage([
+            'text' => $this->text
+        ]);
     }
 }
